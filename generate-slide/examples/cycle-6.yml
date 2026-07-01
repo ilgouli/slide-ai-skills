@@ -1,0 +1,19 @@
+layout: single
+title: "SmartArt / Cycle — 6项"
+block:
+  type: cycle
+  center: Mask master
+  accent: "#22c55e"
+  items:
+    - label: 发现资源限制
+      detail: 指标/client/supplier
+    - label: 诊断与申请
+      detail: 提交审批，风险排查
+    - label: 召集执行团队
+      detail: 确认计划和人员
+    - label: D+1/D+7/D+14追踪
+      detail: TTV/GP/BRG变更
+    - label: 策略复盘
+      detail: 调整方向，重新配置
+    - label: 调优与验证
+      detail: 模型验证，新策略对比

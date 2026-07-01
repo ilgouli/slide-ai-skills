@@ -1,0 +1,17 @@
+layout: single
+title: "SmartArt / Radial — 放射图"
+block:
+  type: radial
+  center: 核心策略
+  accent: "#0ea5e9"
+  items:
+    - label: 价格优化
+      detail: 动态定价模型
+    - label: 供给管理
+      detail: 房型库存分配
+    - label: 需求预测
+      detail: 7/14/30 天预测
+    - label: 渠道分发
+      detail: OTA / 直销占比
+    - label: 风险控制
+      detail: BRG / 取消政策

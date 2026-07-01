@@ -1,0 +1,27 @@
+layout: single
+title: "SmartArt / Matrix — 2×2 四象限"
+block:
+  type: matrix
+  accent: "#10b981"
+  x_axis:
+    low: 低影响
+    high: 高影响
+  y_axis:
+    low: 低紧急
+    high: 高紧急
+  cells:
+    - label: 重要紧急
+      items:
+        - BRG系统故障
+        - 高价房型大量空置
+    - label: 重要不紧急
+      items:
+        - 价格策略优化
+        - 供给质量提升
+    - label: 不重要紧急
+      items:
+        - 数据报表延迟
+    - label: 不重要不紧急
+      items:
+        - 界面美化
+        - 文档整理

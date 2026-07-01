@@ -1,0 +1,14 @@
+layout: single
+title: "SmartArt / Linear — 4步流程"
+block:
+  type: linear
+  accent: "#3b82f6"
+  items:
+    - label: 需求收集
+      detail: 用户访谈 + 数据
+    - label: 方案设计
+      detail: 原型评审
+    - label: 开发实现
+      detail: Sprint 交付
+    - label: 测试验收
+      detail: UAT + 上线

@@ -1,0 +1,12 @@
+layout: single
+title: "SmartArt / Linear — 6步流程"
+block:
+  type: linear
+  accent: "#8b5cf6"
+  items:
+    - label: 立项
+    - label: 调研
+    - label: 设计
+    - label: 开发
+    - label: 测试
+    - label: 发布

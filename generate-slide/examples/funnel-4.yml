@@ -1,0 +1,14 @@
+layout: single
+title: "SmartArt / Funnel — 漏斗图"
+block:
+  type: funnel
+  accent: "#ef4444"
+  items:
+    - label: 曝光量
+      value: "120万 PV"
+    - label: 点击搜索
+      value: "34万 次"
+    - label: 查看详情
+      value: "8.2万 次"
+    - label: 下单预订
+      value: "1.1万 间夜"

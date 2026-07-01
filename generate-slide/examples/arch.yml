@@ -1,0 +1,22 @@
+layout: single
+title: 系统架构
+block:
+  type: arch
+  layers:
+    - label: 前端UI
+      items: [html5, jQuery, Bootstrap]
+    - label: 业务层
+      items:
+        - [后台信息录入, 账户注册, 登录注销]
+        - [发布留言, 创建邀请函, 评论点赞]
+    - label: 数据层
+      items: [事务控制, 数据映射, 缓存]
+    - label: 基础服务
+      items: [Mysql, Storage, Mencache]
+    - label: 运行环境
+      items: [SAE云主机]
+      full_width: true
+  sidebar:
+    label: 账号权限控制
+    row_start: 1
+    row_end: 3

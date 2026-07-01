@@ -1,0 +1,15 @@
+layout: single
+title: "SmartArt / Cycle — 4项"
+block:
+  type: cycle
+  center: 核心主题
+  accent: "#3b82f6"
+  items:
+    - label: 发现问题
+      detail: 指标异常，触发预警
+    - label: 分析根因
+      detail: 数据下钻，定位原因
+    - label: 制定方案
+      detail: 策略设计，评审确认
+    - label: 执行跟踪
+      detail: D+1/D+7 追踪

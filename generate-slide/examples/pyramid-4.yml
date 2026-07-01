@@ -1,0 +1,14 @@
+layout: single
+title: "SmartArt / Pyramid — 金字塔"
+block:
+  type: pyramid
+  accent: "#f59e0b"
+  items:
+    - label: 愿景
+      detail: 成为行业标杆
+    - label: 目标
+      detail: GMV增长30%
+    - label: 策略
+      detail: 供给/价格/渠道
+    - label: 执行
+      detail: 周迭代，月复盘
