@@ -92,7 +92,8 @@ import json, os, requests
 
 deck_id = "<deck-id>"
 deck_dir = f"decks/{deck_id}"
-base_url = os.environ.get("SLIDE_AI_URL", "http://localhost:8100")
+base_url = os.environ.get(
+    "SLIDE_AI_URL", "http://localhost:8100")
 
 files = {}
 for fname in os.listdir(deck_dir):
@@ -112,7 +113,7 @@ EOF
 
 告知用户：
 - 生成了几页
-- 访问链接：`http://localhost:5182/?deck=<deck-id>`（或服务地址）
+- 访问链接：`http://slide.liamzheng.cn/?deck=<deck-id>`
 - 如需调整，可直接修改 `decks/<deck-id>/` 下的 YAML 文件
 
 ---
