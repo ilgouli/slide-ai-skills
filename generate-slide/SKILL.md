@@ -79,16 +79,29 @@ slides:
 
 ### 5. 保存文件
 
-将所有 YAML 文件写入 `decks/<deck-id>/` 目录。
+将所有 YAML 文件写入当前工作目录的 `decks/<deck-id>/` 下：
+
+```
+decks/
+└── <deck-id>/
+    ├── _meta.yml
+    ├── title.yml
+    ├── page-1.yml
+    └── ...
+```
+
+如需写到其他位置，记录完整路径，在下一步上传时作为第二个参数传入即可。
 
 ### 6. 上传到服务
 
 使用 `skill/generate-slide/client.py` 上传：
 
 ```bash
+# 默认从 decks/<deck-id>/ 读取
 python skill/generate-slide/client.py <deck-id>
-# 指定目录（可选）
-python skill/generate-slide/client.py <deck-id> decks/<deck-id>
+
+# 指定自定义目录
+python skill/generate-slide/client.py <deck-id> /path/to/deck
 ```
 
 输出示例：
@@ -98,7 +111,7 @@ python skill/generate-slide/client.py <deck-id> decks/<deck-id>
 [link] http://slide.liamzheng.cn/?deck=mask-master-intro
 ```
 
-环境变量（可在 `bin/setting.sh` 中配置）：
+环境变量：
 - `SLIDE_AI_URL` — 服务地址，默认 `http://slide.liamzheng.cn`
 
 ### 7. 返回结果
