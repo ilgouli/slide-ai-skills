@@ -83,31 +83,24 @@ slides:
 
 ### 6. 上传到服务
 
-调用后端 API 上传：
+使用 `skill/generate-slide/client.py` 上传：
 
 ```bash
-# 读取所有文件并上传
-python3 - <<'EOF'
-import json, os, requests
-
-deck_id = "<deck-id>"
-deck_dir = f"decks/{deck_id}"
-base_url = os.environ.get(
-    "SLIDE_AI_URL", "http://localhost:8100")
-
-files = {}
-for fname in os.listdir(deck_dir):
-    if fname.endswith(".yml"):
-        with open(f"{deck_dir}/{fname}") as f:
-            files[fname] = f.read()
-
-resp = requests.post(
-    f"{base_url}/api/decks",
-    json={"id": deck_id, "files": files},
-)
-print(resp.json())
-EOF
+python skill/generate-slide/client.py <deck-id>
+# 指定目录（可选）
+python skill/generate-slide/client.py <deck-id> decks/<deck-id>
 ```
+
+输出示例：
+```
+[upload] mask-master-intro (decks/mask-master-intro) ...
+[ok] 面纱规则系统介绍 · 6 页
+[link] http://slide.liamzheng.cn/?deck=mask-master-intro
+```
+
+环境变量（可在 `bin/setting.sh` 中配置）：
+- `SLIDE_AI_URL` — 后端地址，默认 `http://localhost:8100`
+- `SLIDE_AI_PUBLIC_URL` — 对外域名，默认 `http://slide.liamzheng.cn`
 
 ### 7. 返回结果
 
