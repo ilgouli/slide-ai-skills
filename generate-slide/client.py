@@ -11,8 +11,7 @@ slide-ai client — 上传 deck 到 slide-ai 服务
     deck-dir  deck 目录路径，默认 decks/<deck-id>
 
 环境变量：
-    SLIDE_AI_URL        后端地址，默认 http://localhost:8100
-    SLIDE_AI_PUBLIC_URL 对外分享域名，默认 http://slide.liamzheng.cn
+    SLIDE_AI_URL  服务地址，默认 http://slide.liamzheng.cn
 """
 import os
 import sys
@@ -21,10 +20,11 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 
+BASE_URL = os.environ.get(
+    'SLIDE_AI_URL', 'http://slide.liamzheng.cn')
+
 
 def upload_deck(deck_id: str, deck_dir: Path) -> dict:
-    base_url = os.environ.get(
-        'SLIDE_AI_URL', 'http://localhost:8100')
     files = {}
     for f in sorted(deck_dir.iterdir()):
         if f.suffix == '.yml':
@@ -37,7 +37,7 @@ def upload_deck(deck_id: str, deck_dir: Path) -> dict:
         ensure_ascii=False,
     ).encode('utf-8')
     req = urllib.request.Request(
-        f'{base_url}/api/decks',
+        f'{BASE_URL}/api/decks',
         data=payload,
         headers={'Content-Type': 'application/json'},
         method='POST',
@@ -65,9 +65,7 @@ def main():
         sys.exit(1)
     print(f"[upload] {deck_id} ({deck_dir}) ...")
     result = upload_deck(deck_id, deck_dir)
-    public_url = os.environ.get(
-        'SLIDE_AI_PUBLIC_URL', 'http://slide.liamzheng.cn')
-    share_url = f'{public_url}/?deck={deck_id}'
+    share_url = f'{BASE_URL}/?deck={deck_id}'
     print(f"[ok] {result.get('title')} "
           f"· {result.get('slide_count')} 页")
     print(f"[link] {share_url}")

@@ -99,8 +99,7 @@ python skill/generate-slide/client.py <deck-id> decks/<deck-id>
 ```
 
 环境变量（可在 `bin/setting.sh` 中配置）：
-- `SLIDE_AI_URL` — 后端地址，默认 `http://localhost:8100`
-- `SLIDE_AI_PUBLIC_URL` — 对外域名，默认 `http://slide.liamzheng.cn`
+- `SLIDE_AI_URL` — 服务地址，默认 `http://slide.liamzheng.cn`
 
 ### 7. 返回结果
 
