@@ -5,12 +5,12 @@ slide-ai client — 上传 deck 到 slide-ai 服务
 
 用法：
     python client.py <deck-id> [deck-dir]
-    python client.py bind <username>
+    python client.py bind --user <username> [--passwd <password>]
 
 参数：
     deck-id   deck 的唯一标识，如 mask-master-intro
     deck-dir  deck 目录路径，默认 decks/<deck-id>
-    bind      绑定用户名密码，用于网页登录
+    bind      绑定用户名密码，用于网页登录；--passwd 可省略（交互输入）
 
 环境变量：
     SLIDE_AI_URL      服务地址，默认 http://slide.liamzheng.cn
@@ -21,6 +21,7 @@ import os
 import sys
 import json
 import getpass
+import argparse
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -127,10 +128,11 @@ def upload_deck(
     )
 
 
-def bind_account(username: str):
+def bind_account(username: str, password: str = ''):
     api_key = _get_api_key()
-    password = getpass.getpass(
-        f"[bind] 设置密码（用于网页登录）: ")
+    if not password:
+        password = getpass.getpass(
+            "[bind] 设置密码（用于网页登录）: ")
     payload = json.dumps({
         'api_key': api_key,
         'username': username,
@@ -181,10 +183,16 @@ def main():
         sys.exit(1)
 
     if sys.argv[1] == 'bind':
-        if len(sys.argv) < 3:
-            print("用法: python client.py bind <username>")
-            sys.exit(1)
-        bind_account(sys.argv[2])
+        p = argparse.ArgumentParser(
+            prog='client.py bind')
+        p.add_argument(
+            '--user', required=True,
+            help='用户名')
+        p.add_argument(
+            '--passwd', default='',
+            help='密码（省略时交互输入）')
+        a = p.parse_args(sys.argv[2:])
+        bind_account(a.user, a.passwd)
         return
 
     deck_id = sys.argv[1]
