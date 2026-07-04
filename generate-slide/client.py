@@ -136,12 +136,43 @@ def bind_account(username: str):
         'username': username,
         'password': password,
     }, ensure_ascii=False).encode('utf-8')
-    _post_json(
+
+    req = urllib.request.Request(
         f'{BASE_URL}/api/users/bind',
-        payload,
+        data=payload,
+        headers={'Content-Type': 'application/json'},
+        method='POST')
+    try:
+        with urllib.request.urlopen(req) as resp:
+            json.loads(resp.read())
+        print(f"[bind] 完成，现在可用 {username} 登录网页")
+        return
+    except urllib.error.HTTPError as e:
+        if e.code != 409:
+            print(f"[error] HTTP {e.code}: "
+                  f"{e.read().decode()}")
+            sys.exit(1)
+
+    # 用户名已存在，改用登录流程，获取该账号的 api_key
+    print(f"[bind] 用户名已存在，尝试登录 {username} ...")
+    login_payload = json.dumps({
+        'username': username,
+        'password': password,
+    }, ensure_ascii=False).encode('utf-8')
+    data = _post_json(
+        f'{BASE_URL}/api/users/login',
+        login_payload,
         {'Content-Type': 'application/json'},
     )
-    print(f"[bind] 完成，现在可用 {username} 登录网页")
+    new_key = data.get('api_key')
+    if not new_key:
+        print("[error] 登录失败，密码错误")
+        sys.exit(1)
+    config = _load_config()
+    config['api_key'] = new_key
+    _save_config(config)
+    print(f"[bind] 已切换到账号 {username}，"
+          f"api_key 已更新到 {_CONFIG_PATH}")
 
 
 def main():
