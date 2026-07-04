@@ -5,10 +5,12 @@ slide-ai client — 上传 deck 到 slide-ai 服务
 
 用法：
     python client.py <deck-id> [deck-dir]
+    python client.py bind <username>
 
 参数：
     deck-id   deck 的唯一标识，如 mask-master-intro
     deck-dir  deck 目录路径，默认 decks/<deck-id>
+    bind      绑定用户名密码，用于网页登录
 
 环境变量：
     SLIDE_AI_URL      服务地址，默认 http://slide.liamzheng.cn
@@ -18,6 +20,7 @@ slide-ai client — 上传 deck 到 slide-ai 服务
 import os
 import sys
 import json
+import getpass
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -124,10 +127,35 @@ def upload_deck(
     )
 
 
+def bind_account(username: str):
+    api_key = _get_api_key()
+    password = getpass.getpass(
+        f"[bind] 设置密码（用于网页登录）: ")
+    payload = json.dumps({
+        'api_key': api_key,
+        'username': username,
+        'password': password,
+    }, ensure_ascii=False).encode('utf-8')
+    _post_json(
+        f'{BASE_URL}/api/users/bind',
+        payload,
+        {'Content-Type': 'application/json'},
+    )
+    print(f"[bind] 完成，现在可用 {username} 登录网页")
+
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
         sys.exit(1)
+
+    if sys.argv[1] == 'bind':
+        if len(sys.argv) < 3:
+            print("用法: python client.py bind <username>")
+            sys.exit(1)
+        bind_account(sys.argv[2])
+        return
+
     deck_id = sys.argv[1]
     deck_dir = Path(
         sys.argv[2] if len(sys.argv) > 2
