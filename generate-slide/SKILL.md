@@ -1,6 +1,6 @@
 ---
 name: generate-slide
-description: 根据用户描述生成 slide-ai 格式的 YAML，上传到服务并返回访问链接
+description: AI 驱动的 PPT 生成 Skill，根据主题描述自动生成幻灯片 YAML 并上传，返回可分享的在线访问链接
 ---
 
 # generate-slide
