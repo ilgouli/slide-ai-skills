@@ -149,23 +149,14 @@ export SLIDE_AI_API_KEY=<your-api-key>
 匿名用户可以上传和分享 deck，但无法通过网页查看自己的 deck 列表。
 注册账号后可在网页登录，查看所有历史 deck。
 
-**方式一：CLI 绑定（推荐）**
+1. 访问 `http://slide.liamzheng.cn` 注册账号
+2. 在 CLI 执行绑定，将本地 api_key 切换到该账号：
 
 ```bash
 python skill/generate-slide/client.py bind --user <username>
-# 或一次性传入密码
-python skill/generate-slide/client.py bind --user <username> --passwd <password>
 ```
 
-两种情况均自动处理：
-- 用户名尚未注册 → 将当前匿名账号绑定到该用户名，历史 deck 保留
-- 用户名已在网页注册 → 自动改用登录流程，将该账号的 api_key 写入本地
-  配置（之后上传的 deck 归入网页账号）
-
-**方式二：先在网页注册，再绑定 CLI**
-
-访问 `http://slide.liamzheng.cn` 注册账号，然后执行
-`python client.py bind --user <username>`，输入注册时的密码即可完成切换。
+输入注册时的密码即可，之后上传的 deck 均归入该账号。
 
 ### 分享 deck
 
