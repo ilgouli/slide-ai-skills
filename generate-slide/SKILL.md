@@ -154,6 +154,8 @@ export SLIDE_AI_API_KEY=<your-api-key>
 
 ```bash
 python skill/generate-slide/client.py bind --user <username>
+# 或直接传入密码，省去交互提示
+python skill/generate-slide/client.py bind --user <username> --passwd <password>
 ```
 
 输入注册时的密码即可，之后上传的 deck 均归入该账号。
