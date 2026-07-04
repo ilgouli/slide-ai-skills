@@ -113,6 +113,7 @@ python skill/generate-slide/client.py <deck-id> /path/to/deck
 
 环境变量：
 - `SLIDE_AI_URL` — 服务地址，默认 `http://slide.liamzheng.cn`
+- `SLIDE_AI_API_KEY` — 手动指定 API Key，不设置时自动注册并保存到 `~/.slide-ai/config.json`
 
 ### 7. 返回结果
 
@@ -120,6 +121,57 @@ python skill/generate-slide/client.py <deck-id> /path/to/deck
 - 生成了几页
 - 访问链接：`http://slide.liamzheng.cn/?deck=<deck-id>`
 - 如需调整，可直接修改 `decks/<deck-id>/` 下的 YAML 文件
+
+---
+
+## 账号与 API Key
+
+### API Key
+
+首次运行 `client.py` 时会自动匿名注册，生成一个 API Key 并保存到 `~/.slide-ai/config.json`：
+
+```json
+{
+  "api_key": "d766c14a180f4108894bb7feef538dbf"
+}
+```
+
+API Key 是上传 deck 的凭证，每次上传时自动使用，无需手动填写。
+
+如需在多台设备使用同一账号，可通过环境变量指定：
+
+```bash
+export SLIDE_AI_API_KEY=<your-api-key>
+```
+
+### 注册账号（可选）
+
+匿名用户可以上传和分享 deck，但无法通过网页查看自己的 deck 列表。
+注册账号后可在网页登录，查看所有历史 deck。
+
+**方式一：绑定现有匿名账号**
+
+```bash
+python skill/generate-slide/client.py bind <username>
+# 输入密码后完成绑定，历史 deck 保留
+```
+
+**方式二：直接在网页注册**
+
+访问 `http://slide.liamzheng.cn`，点击"注册"填写用户名和密码。
+注册后通过 `SLIDE_AI_API_KEY` 环境变量指定网页账号对应的 API Key
+（登录后可在个人设置页查看）。
+
+### 分享 deck
+
+上传后返回的链接格式为：
+
+```
+http://slide.liamzheng.cn/?deck=<deck-id>&token=<access-token>
+```
+
+链接自带访问 token，他人无需登录即可查看该 deck。
+登录用户访问自己的 deck 时，播放页有"返回"按钮可回到列表页。
 
 ---
 
