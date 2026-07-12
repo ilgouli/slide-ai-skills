@@ -27,6 +27,7 @@
 | `body` | string \| string[] | 说明文字；传数组时渲染为项目列表 |
 | `subtitle` | string | title 下方的副标题（如机构名、职位）|
 | `footer` | string | 卡片底部信息（如日期、状态），带上边框分隔 |
+| `cta` | string | 底部行动按钮文字（填充色胶囊样式，自动加 → 箭头）|
 | `tag` | string | 右上角标签 |
 | `color` | string | 卡片强调色（覆盖 block 颜色）|
 
