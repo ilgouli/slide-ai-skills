@@ -15,11 +15,36 @@ footer: "备注文字"               # 可选
 |------|------|------|
 | `heads` | string[] | 表头，必填 |
 | `widths` | string[] | 列宽百分比，可选 |
-| `rows` | string[][] | 数据行，必填 |
+| `col_groups` | ColGroup[] | 分组列头，可选（见下） |
+| `rows` | (string[] \| GroupRow)[] | 数据行，必填 |
 | `footer` | string | 底部备注，可选 |
 | `left_border` | string | 左侧竖线颜色 |
 
-## 示例
+### ColGroup
+
+```yaml
+col_groups:
+  - label: 基本信息
+    span: 2        # 跨几列
+  - label: Q1 考核
+    span: 3
+```
+
+渲染为 `<thead>` 中的第一行，每组跨对应列数，颜色与页面 `color` 一致。
+
+### 分组行（GroupRow）
+
+```yaml
+rows:
+  - group: 技术团队       # 全行标题，accent 背景 + 白字
+  - [张伟, P7, 98%]
+  - group: 产品团队
+  - [赵磊, P6, 90%]
+```
+
+`group` 键出现时，该行渲染为全列合并的分组标题行。
+
+## 基础示例
 
 ```yaml
 type: table
@@ -30,4 +55,25 @@ rows:
   - [执行引擎, 李四, 🚧 开发中, 2026-07-15]
   - [监控面板, 王五, 📋 规划中, TBD]
 footer: "数据截至 2026-07-01"
+```
+
+## 分组行 + 分组列示例
+
+```yaml
+type: table
+col_groups:
+  - label: 基本信息
+    span: 3
+  - label: Q1 考核
+    span: 2
+  - label: Q2 考核
+    span: 2
+heads: [姓名, 部门, 职级, 完成率, 评分, 完成率, 评分]
+rows:
+  - group: 技术团队
+  - [张伟, 前端, P7, 98%, A, 95%, A]
+  - [李明, 后端, P6, 88%, B+, 91%, A-]
+  - group: 产品团队
+  - [赵磊, 产品, P7, 90%, A-, 88%, B+]
+footer: "评分标准：A≥90% / B+≥85% / B≥80%"
 ```
