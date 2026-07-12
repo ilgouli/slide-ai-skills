@@ -22,8 +22,11 @@
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `icon` | string | 图标（见下方列表）|
+| `avatar` | string | 圆形头像图片路径/URL，与 icon 二选一，用于人物卡片 |
 | `value` | string | 大数字，与 icon 二选一 |
-| `body` | string | 说明文字 |
+| `body` | string \| string[] | 说明文字；传数组时渲染为项目列表 |
+| `subtitle` | string | title 下方的副标题（如机构名、职位）|
+| `footer` | string | 卡片底部信息（如日期、状态），带上边框分隔 |
 | `tag` | string | 右上角标签 |
 | `color` | string | 卡片强调色（覆盖 block 颜色）|
 
