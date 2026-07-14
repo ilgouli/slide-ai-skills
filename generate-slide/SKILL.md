@@ -63,6 +63,9 @@ description: PPT 生成 Skill，根据需求生成 YAML 并上传到 slide-ai �
 **示例**
 - `skill/generate-slide/examples/` — 各类组件完整示例
 
+**主题**
+- [`references/theme.md`](references/theme.md) — 预设主题与变量覆盖
+
 ### 3. 规划页面结构
 
 典型结构（可根据内容调整）：
@@ -94,6 +97,7 @@ description: PPT 生成 Skill，根据需求生成 YAML 并上传到 slide-ai �
 ```yaml
 title: "PPT 标题"
 author: <用户名>
+theme: light          # 可选：light / dark / apple-keynote / deep-blue
 slides:
   - title
   - section-1
