@@ -10,6 +10,8 @@ theme: light          # 默认白色
 theme: dark           # 深色
 theme: apple-keynote  # 苹果发布会风（黑底）
 theme: deep-blue      # 深海蓝（适合技术汇报）
+theme: academic       # 米白纸质感（适合论文答辩/学术报告）
+theme: work-report    # 纯白红色强调（适合企业内部汇报）
 ```
 
 ## 覆盖变量

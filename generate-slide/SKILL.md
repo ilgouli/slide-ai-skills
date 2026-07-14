@@ -97,7 +97,7 @@ description: PPT 生成 Skill，根据需求生成 YAML 并上传到 slide-ai �
 ```yaml
 title: "PPT 标题"
 author: <用户名>
-theme: light          # 可选：light / dark / apple-keynote / deep-blue
+theme: light          # 可选：light / dark / apple-keynote / deep-blue / academic / work-report
 slides:
   - title
   - section-1
