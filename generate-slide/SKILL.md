@@ -120,10 +120,31 @@ decks/
     ├── _meta.yml
     ├── title.yml
     ├── page-1.yml
-    └── ...
+    ├── ...
+    └── assets/              # 图片资源放这里
+        ├── cover.png
+        └── arch.png
 ```
 
 如需写到其他位置，记录完整路径，在下一步上传时作为第二个参数传入即可。
+
+**图片资源**：统一放在 `assets/` 子目录，YAML 用相对路径引用：
+
+```yaml
+block:
+  type: image
+  src: assets/arch.png
+```
+
+slide 背景图同样写相对路径：
+
+```yaml
+background: assets/cover.png
+```
+
+网图直接写完整 URL（`http://`/`https://` 开头），无需放 `assets/`。
+支持格式：`.png` / `.jpg` / `.jpeg` / `.svg` / `.gif` / `.webp`，单图上限 5 MB。
+详见 [`references/blocks/image.md`](references/blocks/image.md)。
 
 ### 6. 上传到服务
 

@@ -20,6 +20,8 @@ slide-ai client — 上传 deck 到 slide-ai 服务
 import os
 import sys
 import json
+import base64
+import hashlib
 import getpass
 import argparse
 import urllib.request
@@ -101,10 +103,54 @@ def _post_json(
         sys.exit(1)
 
 
+def _get_json(url: str, headers: dict) -> dict:
+    req = urllib.request.Request(
+        url, headers=headers, method='GET')
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return {}    # deck 不存在，当作无已有 assets
+        body = e.read().decode()
+        print(f"[error] HTTP {e.code}: {body}")
+        sys.exit(1)
+
+
+IMAGE_EXTS = (
+    '.png', '.jpg', '.jpeg',
+    '.svg', '.gif', '.webp',
+)
+MAX_IMAGE_BYTES = 5 * 1024 * 1024   # 5 MB
+
+
+def _scan_assets(assets_dir: Path):
+    """扫描 assets/ 子目录，返回 [{name, path, sha256}]"""
+    out = []
+    if not assets_dir.exists():
+        return out
+    for f in sorted(assets_dir.iterdir()):
+        if f.suffix.lower() not in IMAGE_EXTS:
+            continue
+        if not f.is_file():
+            continue
+        size = f.stat().st_size
+        if size > MAX_IMAGE_BYTES:
+            print(
+                f"[warn] {f.name} 超过 5MB"
+                f"（{size // 1024}KB），跳过")
+            continue
+        digest = hashlib.sha256(
+            f.read_bytes()).hexdigest()
+        out.append({'name': f.name, 'path': f, 'sha': digest})
+    return out
+
+
 def upload_deck(
         deck_id: str,
         deck_dir: Path,
         api_key: str) -> dict:
+    # ① yml 从 deck 根目录扫
     files = {}
     for f in sorted(deck_dir.iterdir()):
         if f.suffix == '.yml':
@@ -114,8 +160,47 @@ def upload_deck(
         print(
             f"[error] {deck_dir} 下没有找到 .yml 文件")
         sys.exit(1)
+
+    # ② 图片只从 assets/ 子目录扫
+    assets_dir = deck_dir / 'assets'
+    local_assets = _scan_assets(assets_dir)
+
+    # ③ 查服务端已有 assets，增量比对
+    headers = {'X-Api-Key': api_key}
+    remote = _get_json(
+        f'{BASE_URL}/api/decks/{deck_id}/assets/meta',
+        headers,
+    )
+    remote_map = {
+        a['name']: a['hash'] for a in remote
+    } if isinstance(remote, list) else {}
+
+    # ④ 只把变化的图 base64 进 payload
+    assets = {}
+    asset_names = []
+    changed = 0
+    for a in local_assets:
+        asset_names.append(a['name'])
+        if remote_map.get(a['name']) != a['sha']:
+            raw = a['path'].read_bytes()
+            ext = a['path'].suffix[1:].lower()
+            assets[a['name']] = (
+                f'data:image/{ext};base64,'
+                + base64.b64encode(raw).decode())
+            changed += 1
+
+    if local_assets:
+        print(
+            f"[assets] {len(local_assets)} 张，"
+            f"变化 {changed}，"
+            f"未变 {len(local_assets) - changed}")
     payload = json.dumps(
-        {'id': deck_id, 'files': files},
+        {
+            'id': deck_id,
+            'files': files,
+            'assets': assets,
+            'asset_names': asset_names,
+        },
         ensure_ascii=False,
     ).encode('utf-8')
     return _post_json(
