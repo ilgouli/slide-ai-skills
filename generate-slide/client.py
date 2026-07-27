@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 # coding=utf-8
 """
-slide-ai client — 上传 deck 到 slide-ai 服务
+slide-ai client — 上传/导出 deck
 
 用法：
-    python client.py <deck-id> [deck-dir]
+    python client.py <deck-id> [deck-dir]                # 上传
+    python client.py export <分享链接|deck-id> [--out <目录>]  # 导出
     python client.py bind --user <username> [--passwd <password>]
 
 参数：
     deck-id   deck 的唯一标识，如 mask-master-intro
     deck-dir  deck 目录路径，默认 decks/<deck-id>
+    export    从分享链接导出 deck（YAML + 图片）到本地目录
     bind      绑定用户名密码，用于网页登录；--passwd 可省略（交互输入）
 
 环境变量：
@@ -26,7 +28,13 @@ import getpass
 import argparse
 import urllib.request
 import urllib.error
+from urllib.parse import urlparse, parse_qs
 from pathlib import Path
+
+try:
+    import yaml
+except ImportError:
+    yaml = None
 
 BASE_URL = os.environ.get(
     'SLIDE_AI_URL', 'http://slide.liamzheng.cn')
@@ -213,6 +221,145 @@ def upload_deck(
     )
 
 
+def _parse_share_url(url: str):
+    """从分享链接或 deck id 提取 (deck_id, token)"""
+    if url.startswith('http'):
+        parsed = urlparse(url)
+        qs = parse_qs(parsed.query)
+        deck_id = qs.get('deck', [None])[0]
+        token = qs.get('token', [None])[0]
+        if not deck_id:
+            # 支持 /gallery/<id>/<page> 或 /<user>/<id>/<page>
+            parts = [p for p in parsed.path.split('/') if p]
+            if len(parts) >= 2:
+                deck_id = parts[-2]
+        if not deck_id:
+            print(f"[error] 无法从 URL 提取 deck id: {url}")
+            sys.exit(1)
+        return deck_id, token
+    # 直接传 deck id
+    return url, None
+
+
+def _fetch_deck(
+        deck_id: str, token: str) -> dict:
+    """GET /api/decks/{id}?token=... 返回 deck 详情（含 files）"""
+    url = (
+        f'{BASE_URL}/api/decks/{deck_id}'
+        f'?token={token}' if token
+        else f'{BASE_URL}/api/decks/{deck_id}')
+    req = urllib.request.Request(url, method='GET')
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()
+        print(f"[error] HTTP {e.code}: {body}")
+        sys.exit(1)
+
+
+def _scan_asset_refs(files: dict) -> list:
+    """扫描所有 yml 里的 assets/<name> 引用，去重返回 name 列表"""
+    if yaml is None:
+        return []
+    names = []
+    seen = set()
+    for fname, content in files.items():
+        if not fname.endswith('.yml'):
+            continue
+        try:
+            data = yaml.safe_load(content) or {}
+        except yaml.YAMLError:
+            continue
+        refs = []
+        if isinstance(data, dict):
+            bg = data.get('background')
+            if isinstance(bg, str):
+                refs.append(bg)
+            block = data.get('block')
+            if isinstance(block, dict):
+                src = block.get('src')
+                if isinstance(src, str):
+                    refs.append(src)
+            for side in ('left', 'right'):
+                side_b = data.get(side)
+                if isinstance(side_b, dict):
+                    src = side_b.get('src')
+                    if isinstance(src, str):
+                        refs.append(src)
+            body = data.get('body')
+            if isinstance(body, dict):
+                src = body.get('src')
+                if isinstance(src, str):
+                    refs.append(src)
+            rows = data.get('rows')
+            if isinstance(rows, list):
+                for row in rows:
+                    items = (row or {}).get('items', [])
+                    for item in items:
+                        if isinstance(item, dict):
+                            src = item.get('src')
+                            if isinstance(src, str):
+                                refs.append(src)
+        for r in refs:
+            if r.startswith('assets/') and r not in seen:
+                seen.add(r)
+                names.append(r)
+    return names
+
+
+def _download_asset(
+        deck_id: str, ref: str, out_dir: Path) -> bool:
+    """下载单张图片到 assets/ 子目录，返回是否成功"""
+    name = ref.split('/')[-1]
+    url = (
+        f'{BASE_URL}/api/decks/{deck_id}/assets/{name}')
+    try:
+        with urllib.request.urlopen(url) as resp:
+            data = resp.read()
+    except urllib.error.HTTPError as e:
+        print(f"[warn] 下载失败 {ref}: HTTP {e.code}")
+        return False
+    assets_dir = out_dir / 'assets'
+    assets_dir.mkdir(parents=True, exist_ok=True)
+    (assets_dir / name).write_bytes(data)
+    return True
+
+
+def export_deck(
+        deck_id: str, token: str, out_dir: Path):
+    """从服务端拉取 deck（yml + 图片）导出到本地目录"""
+    print(f"[export] {deck_id} → {out_dir} ...")
+    data = _fetch_deck(deck_id, token)
+    files = data.get('files', {})
+    if not files:
+        print(f"[error] deck {deck_id} 无文件")
+        sys.exit(1)
+    title = data.get('title', deck_id)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for fname, content in files.items():
+        (out_dir / fname).write_text(
+            content, encoding='utf-8')
+    print(f"[export] {len(files)} 个 yml 文件")
+
+    refs = _scan_asset_refs(files)
+    if refs:
+        ok = 0
+        for ref in refs:
+            if _download_asset(deck_id, ref, out_dir):
+                ok += 1
+        print(f"[export] {ok}/{len(refs)} 张图片")
+    else:
+        print("[export] 无本地图片引用")
+
+    print(f"[ok] {title} 已导出到 {out_dir}")
+    print(
+        "提示：修改后可用 "
+        f"'python {sys.argv[0]} {deck_id} {out_dir}'"
+        " 重新上传")
+
+
 def bind_account(username: str, password: str = ''):
     api_key = _get_api_key()
     if not password:
@@ -278,6 +425,21 @@ def main():
             help='密码（省略时交互输入）')
         a = p.parse_args(sys.argv[2:])
         bind_account(a.user, a.passwd)
+        return
+
+    if sys.argv[1] == 'export':
+        p = argparse.ArgumentParser(
+            prog='client.py export')
+        p.add_argument(
+            'url', help='分享链接或 deck id')
+        p.add_argument(
+            '--out', default=None,
+            help='导出目录，默认 decks/<deck-id>')
+        a = p.parse_args(sys.argv[2:])
+        deck_id, token = _parse_share_url(a.url)
+        out_dir = Path(
+            a.out if a.out else f'decks/{deck_id}')
+        export_deck(deck_id, token, out_dir)
         return
 
     deck_id = sys.argv[1]

@@ -169,6 +169,29 @@ python skill/generate-slide/client.py <deck-id> /path/to/deck
 - `SLIDE_AI_URL` — 服务地址，默认 `http://slide.liamzheng.cn`
 - `SLIDE_AI_API_KEY` — 手动指定 API Key，不设置时自动注册并保存到 `~/.slide-ai/config.json`
 
+### 导出已有 deck
+
+从分享链接把 deck（YAML + 图片）导出到本地，便于二次编辑后重新上传：
+
+```bash
+# 分享链接（含 token）
+python skill/generate-slide/client.py export \
+  "http://slide.liamzheng.cn/?deck=xxx&token=yyy" \
+  --out decks/xxx
+
+# 也支持 gallery 路径或 deck id（需有访问权限）
+python skill/generate-slide/client.py export "xxx" --out decks/xxx
+```
+
+导出后本地结构：
+```
+decks/xxx/
+├── _meta.yml
+├── title.yml
+└── assets/          # 图片随 deck 一起导出
+    └── cover.png
+```
+
 ### 7. 返回结果
 
 告知用户：
