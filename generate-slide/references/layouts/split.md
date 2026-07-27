@@ -6,6 +6,7 @@
 layout: split
 title: "页面标题"
 ratio: "50/50"         # 左/右宽度比，默认 50/50
+align: center          # 内容垂直对齐：center（默认）/ top
 content_width: 800     # 内容区最大宽度（px），默认 800
 background: ""         # 可选
 left:
@@ -22,6 +23,7 @@ right:
 |------|------|------|
 | `title` | string | 页面标题，必填 |
 | `ratio` | string | 左/右宽度比，如 `"40/60"`，默认 `"50/50"` |
+| `align` | string | 内容垂直对齐：`center`（默认，垂直居中）/ `top`（上对齐） |
 | `content_width` | number | 内容区宽度上限（px），默认 800 |
 | `background` | string | 背景色或图片路径 |
 | `left` | object | 左侧内容块，见 blocks/ 下各文件 |
