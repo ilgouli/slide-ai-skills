@@ -28,7 +28,7 @@ import getpass
 import argparse
 import urllib.request
 import urllib.error
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, quote
 from pathlib import Path
 
 try:
@@ -313,7 +313,8 @@ def _download_asset(
     """下载单张图片到 assets/ 子目录，返回是否成功"""
     name = ref.split('/')[-1]
     url = (
-        f'{BASE_URL}/api/decks/{deck_id}/assets/{name}')
+        f'{BASE_URL}/api/decks/{deck_id}/assets/'
+        + quote(name))
     try:
         with urllib.request.urlopen(url) as resp:
             data = resp.read()
