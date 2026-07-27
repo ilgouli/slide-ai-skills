@@ -15,6 +15,19 @@ font_size: 0.85rem        # 可选，字体大小
 - 代码块 ` ```lang ``` `
 - 引用 `> text`
 - 表格
+- 文件链接 `[文件名](file:assets/x.md)`，点击弹框展示文件内容
+
+## 文件链接
+
+用 `[文件名](file:assets/<name>)` 引用 `assets/` 下的文本文件，
+点击后弹框显示内容。支持 `.md`（渲染富文本）、`.json`（格式化）、
+`.yaml`/`.yml`（原样）。文件需随 deck 上传（放 `assets/` 子目录）。
+
+```yaml
+content: |
+  详见 [SKILL.md](file:assets/SKILL.md) 与
+  [config.json](file:assets/config.json)
+```
 
 ## 参数说明
 

@@ -129,16 +129,25 @@ IMAGE_EXTS = (
     '.png', '.jpg', '.jpeg',
     '.svg', '.gif', '.webp',
 )
+TEXT_EXTS = (
+    '.md', '.json', '.yaml', '.yml',
+)
+MIME_MAP = {
+    '.md': 'text/markdown',
+    '.json': 'application/json',
+    '.yaml': 'text/yaml', '.yml': 'text/yaml',
+}
 MAX_IMAGE_BYTES = 5 * 1024 * 1024   # 5 MB
 
 
 def _scan_assets(assets_dir: Path):
-    """扫描 assets/ 子目录，返回 [{name, path, sha256}]"""
+    """扫描 assets/ 子目录，返回 [{name, path, sha256, mime}]"""
     out = []
     if not assets_dir.exists():
         return out
     for f in sorted(assets_dir.iterdir()):
-        if f.suffix.lower() not in IMAGE_EXTS:
+        ext = f.suffix.lower()
+        if ext not in IMAGE_EXTS + TEXT_EXTS:
             continue
         if not f.is_file():
             continue
@@ -150,7 +159,14 @@ def _scan_assets(assets_dir: Path):
             continue
         digest = hashlib.sha256(
             f.read_bytes()).hexdigest()
-        out.append({'name': f.name, 'path': f, 'sha': digest})
+        if ext in IMAGE_EXTS:
+            mime = f'image/{ext[1:]}'
+        else:
+            mime = MIME_MAP.get(ext, 'text/plain')
+        out.append({
+            'name': f.name, 'path': f,
+            'sha': digest, 'mime': mime,
+        })
     return out
 
 
@@ -191,9 +207,8 @@ def upload_deck(
         asset_names.append(a['name'])
         if remote_map.get(a['name']) != a['sha']:
             raw = a['path'].read_bytes()
-            ext = a['path'].suffix[1:].lower()
             assets[a['name']] = (
-                f'data:image/{ext};base64,'
+                f'data:{a["mime"]};base64,'
                 + base64.b64encode(raw).decode())
             changed += 1
 

@@ -77,3 +77,19 @@ rows:
   - [赵磊, 产品, P7, 90%, A-, 88%, B+]
 footer: "评分标准：A≥90% / B+≥85% / B≥80%"
 ```
+
+## 文件链接
+
+单元格内容支持 markdown 链接，`[文件名](file:assets/<name>)`
+点击弹框显示文件内容（`.md`/`.json`/`.yaml`/`.yml`）：
+
+```yaml
+type: table
+heads: ["文件", "说明"]
+rows:
+  - ["[SKILL.md](file:assets/SKILL.md)", "入口文档"]
+  - ["[config.json](file:assets/config.json)", "配置"]
+```
+
+文件需放 `assets/` 子目录随 deck 上传，详见
+[`blocks/image.md`](image.md) 的资源约定。
