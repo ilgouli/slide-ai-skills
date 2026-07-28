@@ -22,6 +22,7 @@ slide-ai client — 上传/导出 deck
 import os
 import sys
 import json
+import re
 import base64
 import hashlib
 import getpass
@@ -273,53 +274,27 @@ def _fetch_deck(
         sys.exit(1)
 
 
+# 匹配两类资源引用：
+#   - 直接引用：assets/<name>（图片 src/background）
+#   - 文件链接：file:assets/<name>（markdown 链接，含 table/bullets 单元格）
+ASSET_REF_RE = re.compile(
+    r'(?:file:)?(assets/[\w.\-]+)'
+)
+
+
 def _scan_asset_refs(files: dict) -> list:
-    """扫描所有 yml 里的 assets/<name> 引用，去重返回 name 列表"""
-    if yaml is None:
-        return []
+    """扫描所有 yml 文本里的 assets/<name> 引用，
+    覆盖 src/background 字段和 file: 链接，去重返回 name 列表"""
     names = []
     seen = set()
     for fname, content in files.items():
         if not fname.endswith('.yml'):
             continue
-        try:
-            data = yaml.safe_load(content) or {}
-        except yaml.YAMLError:
-            continue
-        refs = []
-        if isinstance(data, dict):
-            bg = data.get('background')
-            if isinstance(bg, str):
-                refs.append(bg)
-            block = data.get('block')
-            if isinstance(block, dict):
-                src = block.get('src')
-                if isinstance(src, str):
-                    refs.append(src)
-            for side in ('left', 'right'):
-                side_b = data.get(side)
-                if isinstance(side_b, dict):
-                    src = side_b.get('src')
-                    if isinstance(src, str):
-                        refs.append(src)
-            body = data.get('body')
-            if isinstance(body, dict):
-                src = body.get('src')
-                if isinstance(src, str):
-                    refs.append(src)
-            rows = data.get('rows')
-            if isinstance(rows, list):
-                for row in rows:
-                    items = (row or {}).get('items', [])
-                    for item in items:
-                        if isinstance(item, dict):
-                            src = item.get('src')
-                            if isinstance(src, str):
-                                refs.append(src)
-        for r in refs:
-            if r.startswith('assets/') and r not in seen:
-                seen.add(r)
-                names.append(r)
+        for m in ASSET_REF_RE.finditer(content):
+            ref = m.group(1)
+            if ref not in seen:
+                seen.add(ref)
+                names.append(ref)
     return names
 
 
