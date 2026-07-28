@@ -7,6 +7,7 @@ layout: compose
 title: "页面标题"
 align: top                # top | center（默认 center）
 fill: false                # 行均分高度、单元格撑满（网格场景），默认 false
+row_ratios: ""            # 行间高度比，如 "1/2"，需配合 fill，默认均分
 gap: 16                   # 行间距（px），默认 16
 cell_title:               # 单元格标题样式（可选，配一次作用于全部）
   size: sm                # sm / base / lg，默认 sm
@@ -40,6 +41,7 @@ rows:
 | `rows[].gap` | number | 行内 block 间距（px） |
 | `gap` | number | 行间距（px），默认 16 |
 | `fill` | boolean | 行均分高度、单元格撑满，适合 2×2 等网格场景。默认 false |
+| `row_ratios` | string | 行间高度比，如 `"1/2"`、`"1/3/1"`，需配合 `fill`。默认均分 |
 | `cell_title` | object / false | 单元格标题样式，配一次作用于全部。`false` 关闭标题 |
 | `cell_title.size` | string | 标题字号：`sm`/`base`/`lg`，默认 `sm` |
 | `cell_title.accent` | boolean | 是否显示左竖线，默认 `true` |
@@ -145,3 +147,35 @@ rows:
 ```
 
 `fill: true` 适合 2×2、2×3 等网格场景；内容多的单行布局保持默认（不 fill）即可。
+
+## 示例：行高比（row_ratios）
+
+`fill: true` 默认行均分高度。用 `row_ratios` 指定各行高度比，如
+第一行 1 份、第二行 2 份：
+
+```yaml
+layout: compose
+title: "季度概览"
+fill: true
+row_ratios: "1/2"        # 第一行:第二行 = 1:2
+rows:
+  - items:
+      - title: 核心指标
+        block:
+          type: kpi
+          kpis:
+            - value: "98%"
+              label: 完成率
+  - items:
+      - title: 详细说明
+        block:
+          type: bullets
+          items:
+            - 完成率提升
+            - 延迟下降
+            - 缓存优化
+            - 架构升级
+```
+
+注意：`row_ratios` 需配合 `fill: true` 才生效（非 fill 模式行高度由内容决定）。
+数量需与 `rows` 行数一致。
