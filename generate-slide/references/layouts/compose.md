@@ -36,7 +36,10 @@ rows:
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | `rows` | array | 行列表，必填 |
-| `rows[].items` | array | 本行的 block 列表，必填。支持直接 InnerBlock 或 `{ title, block }` 形态 |
+| `rows[].separator` | `'arrow'` | 替代 `items`，在该位置渲染 ↓ 箭头分隔符 |
+| `rows[].color` | string | 箭头颜色：`blue` / `green` / `yellow` / `red` / 任意 CSS 色值 |
+| `rows[].size` | string | 箭头大小：`sm` / `md`（默认）/ `lg` |
+| `rows[].items` | array | 本行的 block 列表。支持直接 InnerBlock、`{ title, block }` 形态，或 `{ separator: 'arrow', color?, size? }` |
 | `rows[].ratios` | string | 行内宽度比，如 `"60/40"`，仅多 block 行有效 |
 | `rows[].gap` | number | 行内 block 间距（px） |
 | `gap` | number | 行间距（px），默认 16 |
@@ -179,3 +182,54 @@ rows:
 
 注意：`row_ratios` 需配合 `fill: true` 才生效（非 fill 模式行高度由内容决定）。
 数量需与 `rows` 行数一致。
+
+
+## 示例：separator 箭头分隔符
+
+`rows` 中插入 `separator: arrow` 渲染 ↓ 箭头；`items` 中插入渲染 → 箭头。
+支持 `color`（`blue`/`green`/`yellow`/`red`/CSS 色值）和 `size`（`sm`/`md`/`lg`）。
+
+**行间 ↓ 箭头**（左右分栏，右侧两段内容间加箭头）：
+
+```yaml
+layout: compose
+title: "用户下单路径"
+content_width: 960
+align: top
+rows:
+  - items:
+      - type: flow
+        # ... 流程图
+      - type: bullets
+        items:
+          - text: "用户特点"
+            items: ["需求明确", "价格敏感"]
+    ratios: "60/40"
+  - separator: arrow            # 行间 ↓ 箭头
+    color: blue                 # 可选颜色
+    size: lg                    # 可选大小
+  - items:
+      - type: markdown
+        content: ""             # 左列占位保持对齐
+      - type: bullets
+        items:
+          - text: "策略启发"
+            items: ["地理位置召回", "价格优势特征"]
+    ratios: "60/40"
+```
+
+**列间 → 箭头**（同一行 block 之间）：
+
+```yaml
+layout: compose
+title: "处理流程"
+rows:
+  - items:
+      - type: bullets
+        items: ["输入数据", "数据清洗"]
+      - separator: arrow        # 列间 → 箭头
+        color: green
+      - type: bullets
+        items: ["特征提取", "模型推理"]
+    ratios: "45/10/45"
+```
