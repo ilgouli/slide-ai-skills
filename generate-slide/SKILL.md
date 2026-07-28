@@ -147,13 +147,14 @@ background: assets/cover.png
 详见 [`references/blocks/image.md`](references/blocks/image.md)。
 
 **文本资源**：`assets/` 也可放文本文件，用 markdown 链接
-`[文件名](file:assets/x.md)` 引用，点击弹框展示内容。
-支持 `.md`（富文本）/ `.json`（格式化）/ `.yaml`/`.yml`（原样）。
+`[显示文字](file:assets/x.md)` 引用，点击弹框展示内容。
+`[]` 里可用别名（不限于文件名）。支持 `.md`（富文本）/ `.json`（格式化）/ `.yaml`/`.yml`（原样）。
 
 ```yaml
 # table 单元格
 rows:
   - ["[SKILL.md](file:assets/SKILL.md)", "说明"]
+  - ["[查看配置](file:assets/config.json)", "说明"]   # 别名
 
 # markdown / bullets 同样支持
 content: "详见 [config.json](file:assets/config.json)"
