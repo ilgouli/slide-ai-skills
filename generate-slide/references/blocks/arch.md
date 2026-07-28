@@ -4,6 +4,7 @@
 
 ```yaml
 type: arch
+label_width: 72           # 层标签列宽度（px），默认 72
 layers:
   - label: 层名称
     sub: 层副标注           # 可选
@@ -47,6 +48,7 @@ items:
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | `layers` | array | 层列表，必填，从上到下排列 |
+| `label_width` | number | 层标签列宽度（px），默认 72。标签字多时调大避免换行 |
 | `layers[].label` | string | 层名称，必填 |
 | `layers[].sub` | string | 层名称副标注 |
 | `layers[].items` | array | 节点列表，见上方四种写法 |
